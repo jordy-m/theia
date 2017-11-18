@@ -46,7 +46,7 @@ export class ShellProcess extends TerminalProcess {
     ) {
         super(<TerminalProcessOptions>{
             command: options.shell || ShellProcess.getShellExecutablePath(),
-            args: [],
+            args: ShellProcess.getShellExecutableArgs(),
             options: {
                 name: 'xterm-color',
                 cols: options.cols || ShellProcess.defaultCols,
@@ -61,7 +61,15 @@ export class ShellProcess extends TerminalProcess {
         if (isWindows) {
             return 'cmd.exe';
         } else {
-            return process.env.SHELL!;
+            return process.env.THEIA_SHELL || process.env.SHELL!;
         }
+    }
+
+    protected static getShellExecutableArgs(): string[] {
+        if (process.env.THEIA_SHELL_ARGS) {
+            const args = process.env.THEIA_SHELL_ARGS!.toString().split(' ');
+            return args;
+        }
+        return [];
     }
 }
